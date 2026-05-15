@@ -5,7 +5,7 @@ const userRouter = require('./routes/user');
 
 const app = express();
 app.use(express.json());
-app.use('/api/v1/user', userRouter);
+app.use('/api/v1/', userRouter);
 
 
 const mongoose = require("mongoose");
@@ -18,4 +18,4 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   }).catch((error) => {
     console.log("Unable to connect:", error.message);
   });
- 
+  
