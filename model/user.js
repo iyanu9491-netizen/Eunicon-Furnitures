@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema({
     phoneNumber: {
         type: String,
         required: true
+    },
+    country: {
+        type: String,
+        required: true
+    },
+    cityState: {
+        type: String,
+        required: true
     }
 }, {timestamps: true});
 
