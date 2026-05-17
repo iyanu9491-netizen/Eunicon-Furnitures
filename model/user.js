@@ -29,6 +29,16 @@ const userSchema = new mongoose.Schema({
     cityState: {
         type: String,
         required: true
+    },
+    otp:{
+        type: String,
+        trim:true
+    },
+    otpExpires:{
+        type: Date,
+        default:()=>{
+            return Date.now() + 30 * 1000
+        }
     }
 }, {timestamps: true});
 
