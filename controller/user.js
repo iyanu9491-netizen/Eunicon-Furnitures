@@ -49,7 +49,7 @@ exports.register = async (req, res, next) => {
 exports.getProfile = async (req, res, next) => {
     try {
         const { id } = req.user;
-        const {country, "city/state": cityState} = req.body;
+        const {firstName, lastName, phoneNumber, country, "city/state": cityState} = req.body;
         const existingUser = await user.findById(id);
 
         if(!existingUser) {
@@ -60,10 +60,10 @@ exports.getProfile = async (req, res, next) => {
         }
 
         const data = {
-            firstName: existingUser.firstName,
-            lastName: existingUser.lastName,
+            firstName: firstName || existingUser.firstName,
+            lastName: lastName || existingUser.lastName,
             email: existingUser.email,
-            phoneNumber: existingUser.phoneNumber
+            phoneNumber: phoneNumber || existingUser.phoneNumber
         }
         const location = {
             country,
@@ -76,7 +76,7 @@ exports.getProfile = async (req, res, next) => {
             location
         })
 
-        const updatedUser = await user.findByIdAndUpdate(id, location, { new: true })
+        const updatedUser = await user.findByIdAndUpdate(id, { data, location}, { new: true })
 
         if(!updatedUser) {
             return next({
