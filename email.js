@@ -105,7 +105,7 @@ exports.resetPasswordTemplate = (data)=> {
     `
 }
 
-exports.resetPasswordSuccessfulTemplate = (name)=> {
+exports.resetPasswordSuccessfulTemplate = (firstName)=> {
     return `
         <!DOCTYPE html>
 <html lang="en">
@@ -143,7 +143,7 @@ exports.resetPasswordSuccessfulTemplate = (name)=> {
                                 
                                 <h2 style="margin: 0 0 15px; font-size: 22px; font-weight: 700; color: #1a1a1a;">Password Reset Successful</h2>
                                 <p style="font-size: 16px; line-height: 1.5; margin: 0 0 30px; color: #666666;">
-                                    Hi ${name}, your password for <strong>EUNICON FURNITURES</strong> has been successfully updated. You can now log back into your account using your new credentials.
+                                    Hi ${firstName}, your password for <strong>EUNICON FURNITURES</strong> has been successfully updated. You can now log back into your account using your new credentials.
                                 </p>
                                 
                                 <!-- CTA Button -->

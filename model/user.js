@@ -35,11 +35,11 @@ const userSchema = new mongoose.Schema({
     otpExpires:{
         type: Date,
         default:()=>{
-            return Date.now() + 30 * 1000
+            return Date.now() + (5 * 60 * 1000)
         }
     }
 }, {timestamps: true});
 
-const user = mongoose.model('users', userSchema);
+const userModel = mongoose.model('users', userSchema);
 
-module.exports = user;
+module.exports = userModel;

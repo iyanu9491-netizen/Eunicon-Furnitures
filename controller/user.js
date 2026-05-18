@@ -1,14 +1,16 @@
-const user = require('../model/user');
+const userModel = require('../model/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {brevo} = require('../utils/brevo');
 const {emailTemplate, resetPasswordTemplate, resetPasswordSuccessfulTemplate}= require('../email');
+const otp = require('otp-generator')
 
 exports.register = async (req, res, next) => {
     try {
         const { firstName, lastName, email, password, phoneNumber} = req.body;
+        const normalizedEmail = email.trim().toLowerCase();
 
-        const existingEmail = await user.findOne({email: email.toLowerCase()});
+        const existingEmail = await userModel.findOne({email: normalizedEmail});
         if(existingEmail) {
             return next({
                 message: `User with email ${email} already exists`,
@@ -19,10 +21,10 @@ exports.register = async (req, res, next) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = await user.create({
+        const newUser = await userModel.create({
             firstName,
             lastName,
-            email: email.toLowerCase(),
+            email: normalizedEmail,
             password: hashedPassword,
             phoneNumber
         })
@@ -39,10 +41,7 @@ exports.register = async (req, res, next) => {
             data
         });
     } catch (error) {
-        next({
-                message: error.message,
-                statusCode: 500
-            })
+       console.log(error)
     }
 };
 
@@ -101,14 +100,22 @@ exports.getProfile = async (req, res, next) => {
 exports.login = async (req,res)=>{
     try {
         const {email, password} = req.body;
-        const existingUser = await user.findOne({email: email.toLowerCase()});
+
+        if(!email || !password) {
+            return res.status(400).json({
+                message: "Invalid email or password"
+            })
+        }
+        
+        const existingUser = await userModel.findOne({email: email.trim().toLowerCase()});
         if(!existingUser) {
             return res.status(400).json({
                 message: "Invalid email or password"
             })
         }
-        const isPasswordValid = await bcrypt.compare(password, existingUser.password);
-        if(!isPasswordValid) {
+        const validPassword = await bcrypt.compare(password, existingUser.password);
+
+        if(!validPassword) {
             return res.status(400).json({
                 message: "Invalid email or password"
             })
@@ -133,7 +140,15 @@ exports.login = async (req,res)=>{
 exports.forgotPassword = async (req, res) => {
     try {
         const {email} = req.body
-        const existingUser = await user.findOne({email: email.toLowerCase()});
+
+        if (!email) {
+            return res.status(400).json({
+                message: "Email is required"
+            })
+        }
+
+        const existingUser = await userModel.findOne({email: email.toLowerCase()})
+
         if(!existingUser) {
             return res.status(400).json({
                 message: "User with this email does not exist"
@@ -141,19 +156,87 @@ exports.forgotPassword = async (req, res) => {
         }
             const OTP = Math.round(Math.random() * 1e6).toString().padStart(6, '0');
             existingUser.otp = OTP;
-            existingUser.otpExpires = Date.now() + (30 * 1000)
+            existingUser.otpExpires = Date.now() + (5 * 60 *1000 )
             const data = {
                 name: `${existingUser.firstName} ${existingUser.lastName}`,
                 otp: OTP
             }
             await brevo(email, `${existingUser.firstName} ${existingUser.lastName}`, resetPasswordTemplate(data));
             await existingUser.save();
+
             res.status(200).json({
-                message: "Password reset OTP sent successfully"
+                message: "Password reset successfully"
             });
     } catch (error) {
         res.status(500).json({
             message: error.message
+        })
+    }
+}
+exports.resetPassword = async (req, res)=>{
+    try {
+        const {otp, newPassword, email} = req.body
+
+        const user = await userModel.findOne({email: email.toLowerCase()})
+
+        if(user == null){
+            return res.status(404).json({
+                message:'Invalid Credentials'
+            })
+        }
+        console.log(Date.now() > user.otpExpires);
+        if ( Date.now() > user.otpExpires || user.otp !== otp ){
+            return res.status(400).json({
+                message:'Invalid OTP'
+            })
+        }
+        //reset the users password with the encrypted and updated password
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(newPassword, salt)
+        user.newPassword = hashedPassword
+        await user.save()
+        brevo(user.email, user.firstName, resetPasswordSuccessfulTemplate(user.firstName));
+        
+        res.status(200).json({
+            message:'Password reset successfully'
+        })
+    } catch (error) {
+        res.status(500).json({
+            message:error.message
+        })
+    }
+}
+exports.changePassword = async (req, res)=>{
+    try {
+        const {id} = req.user 
+        const {currentPassword, newPassword} = req.body
+
+        const user = await userModel.findById(id)
+
+        if(!user){
+            return res.status(400).json({
+                message:'User not Found'
+            })
+        }
+        const validPassword = await bcrypt.compare(currentPassword, user.password)
+
+        if(!validPassword){
+            return res.status(400).json({
+                message:'Current password is Invalid'
+            })
+        }
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(newPassword, salt)
+        user.password = hashedPassword
+
+        await user.save()
+
+        res.status(200).json({
+            message:'Password changed successfully'
+        })
+    } catch (error) {
+        res.status(500).json({
+            message:error.message
         })
     }
 }
