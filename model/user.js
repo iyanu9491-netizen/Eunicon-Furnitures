@@ -22,10 +22,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    country: {
+        type: String
+    },
+    cityState: {
+        type: String
+    },
     otp:{
         type: String,
         trim:true
-
     },
     otpExpires:{
         type: Date,

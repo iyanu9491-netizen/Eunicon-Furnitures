@@ -2,12 +2,38 @@ const express = require('express');
 require('dotenv').config();
 const PORT = process.env.PORT || 6060;
 const userRouter = require('./routes/user');
+const sellerRouter = require('./routes/seller');
+const productRouter = require('./routes/product');
 
 const app = express();
 app.use(express.json());
 app.use('/api/v1/', userRouter);
+app.use('/api/v1/', sellerRouter);
+app.use('/api/v1/', productRouter);
 
 
+app.use((req, res, next) => {
+    next({
+                message: `route ${req.originalUrl} and ${req.method} not found`,
+                statusCode: 500
+            })
+})
+
+app.use((err, req, res, next) => {
+    if (err.name === 'MulterError'){
+        return res.status(400).json({
+            message: 'File upload failed'
+        })
+    }
+    if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({
+            message: 'Session expired, please login again'
+        })
+    }
+    res.status(500).json({
+        message: err.message
+    })
+})
 
 const mongoose = require("mongoose");
 

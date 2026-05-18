@@ -43,6 +43,59 @@ exports.register = async (req, res, next) => {
     } catch (error) {
        console.log(error)
     }
+};
+
+exports.getProfile = async (req, res, next) => {
+    try {
+        const { id } = req.user;
+        const {firstName, lastName, phoneNumber, country, "city/state": cityState} = req.body;
+        const existingUser = await user.findById(id);
+
+        if(!existingUser) {
+            return next({
+                message: `User with id ${id} does not exist`,
+                statusCode: 404
+            })
+        }
+
+        const data = {
+            firstName: firstName || existingUser.firstName,
+            lastName: lastName || existingUser.lastName,
+            email: existingUser.email,
+            phoneNumber: phoneNumber || existingUser.phoneNumber
+        }
+        const location = {
+            country,
+            "city/state": cityState
+        }
+
+        res.status(200).json({
+            message: "User profile retrieved successfully",
+            data,
+            location
+        })
+
+        const updatedUser = await user.findByIdAndUpdate(id, { data, location}, { new: true })
+
+        if(!updatedUser) {
+            return next({
+                message: `User with id ${id} does not exist`,
+                statusCode: 404
+            })
+        }
+
+        res.status(200).json({
+            message: "User profile updated successfully",
+            data,
+            location
+        })
+
+    } catch (error) {
+        next({
+                message: error.message,
+                statusCode: 500
+            })
+    }
 }
 exports.login = async (req,res)=>{
     try {
