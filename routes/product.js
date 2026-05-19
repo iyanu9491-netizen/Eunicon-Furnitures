@@ -1,6 +1,6 @@
 const multer = require('multer');
 const { Authentication } = require('../middlewares/auth');
-const { uploadProduct } = require('../controller/product');
+const { uploadProduct, allProduct, collection } = require('../controller/product');
 
 const router = require('express').Router();
 
@@ -11,5 +11,9 @@ const upload = multer(
 )
 
 router.post('/uploadProduct', Authentication,upload.single('productImage'), uploadProduct)
+
+router.get('/allProduct', allProduct)
+
+router.get('/product/:collections', collection)
 
 module.exports = router
