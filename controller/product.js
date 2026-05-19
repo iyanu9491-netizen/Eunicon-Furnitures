@@ -7,8 +7,8 @@ const cloudinary = require('../config/cloudinary');
 exports.uploadProduct = async (req, res, next) => {
     try {
         const { id } = req.user;
-        console.log(req.user)
-        const { productName, price, collection, productImage } = req.body;
+        // console.log(req.user)
+        const { productName, price, collections, productImage } = req.body;
    
         const uploadCloud = await cloudinary.uploader.upload(req.file.path);
 
@@ -22,7 +22,7 @@ exports.uploadProduct = async (req, res, next) => {
         const createProduct = await productModel.create({
             productName,
             price,
-            collection,
+            collections,
             productImage: uploadCloud.secure_url
         })
 
