@@ -1,4 +1,4 @@
-const { register, login, forgotPassword, resetPassword, changePassword, getProfile } = require("../controller/user");
+const { register, login, forgotPassword,getProfile, resetPassword, changePassword } = require("../controller/user");
 const { Authentication } = require('../middlewares/auth')
 const { registerValidator, resetPasswordValidator, changePasswordValidator } = require('../middlewares/validator');
 const router = require('express').Router();
