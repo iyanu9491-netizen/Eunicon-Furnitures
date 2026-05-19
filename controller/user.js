@@ -96,7 +96,8 @@ exports.getProfile = async (req, res, next) => {
                 statusCode: 500
             })
     }
-}
+};
+
 exports.login = async (req,res)=>{
     try {
         const {email, password} = req.body;

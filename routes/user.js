@@ -10,4 +10,5 @@ router.post('/forgot-password',forgotPassword)
 router.put('/profile', Authentication, getProfile)
 router.post('/reset-password', resetPasswordValidator, resetPassword)
 router.post('/change-password',Authentication, changePasswordValidator, changePassword)
+
 module.exports = router

@@ -4,12 +4,19 @@ const PORT = process.env.PORT || 6060;
 const userRouter = require('./routes/user');
 const sellerRouter = require('./routes/seller');
 const productRouter = require('./routes/product');
+const artisanRouter = require('./routes/artisan');
+const hireRouter = require('./routes/hiring');
+const messageRouter = require('./routes/message');
+const requestRouter = require('./routes/request');
 
 const app = express();
 app.use(express.json());
 app.use('/api/v1/', userRouter);
 app.use('/api/v1/', sellerRouter);
 app.use('/api/v1/', productRouter);
+app.use('/api/v1/', artisanRouter);
+app.use('/api/v1/', hireRouter);
+app.use('/api/v1/', requestRouter);
 
 
 app.use((req, res, next) => {

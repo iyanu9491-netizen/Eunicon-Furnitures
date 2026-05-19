@@ -13,18 +13,20 @@ const artisanSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    loca: {
+    location: {
         type: String,
         required: true
     },
-    password: {
-        type: String,
-        required: true
+    ratings: {
+        type: Number,
+        default: 0
     },
-    role: {
-        type: String,
-        default: 'seller'
-    }
+    hireNow: {
+        type: String
+    },
+    message: {
+        type: String
+    },
 }, {timestamps: true});
 
 const artisan = mongoose.model('artisans', artisanSchema);
