@@ -91,4 +91,36 @@ exports.getArtisan = async (req, res, next) => {
                 statusCode: 500
             })
     }
-}
+};
+
+exports.allArtisan = async (req, res, next) => {
+    try {
+        const users = await artisanModel.find();
+        res.status(200).json({
+            message: 'All  Artisan',
+            users
+        })
+    } catch (error) {
+        next({
+            messsage: error.message,
+            statusCode: 500
+        })
+    }
+};
+
+exports.profession = async (req, res, next) => {
+    try {
+        const { profession } = req.params;
+
+        const users = await artisanModel.find({profession});
+        res.status(200).json({
+            message:  `All ${profession}`,
+            users
+        })
+    } catch (error) {
+        next({
+            message: error.message,
+            statusCode: 500
+        })
+    }
+};

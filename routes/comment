@@ -1,0 +1,7 @@
+const { createComment } = require('../controller/comment');
+const { Authentication } = require('../middlewares/auth');
+const router = require('express').Router()
+
+router.post('/comment', Authentication, createComment)
+
+module.exports = router

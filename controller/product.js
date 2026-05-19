@@ -36,4 +36,36 @@ exports.uploadProduct = async (req, res, next) => {
                 statusCode: 500
             })
     }
-}
+};
+
+exports.allProduct = async (req, res, next) => {
+    try {
+        const users = await productModel.find();
+        res.status(200).json({
+            message: 'All  Product',
+            users
+        })
+    } catch (error) {
+        next({
+            messsage: error.message,
+            statusCode: 500
+        })
+    }
+};
+
+exports.collection = async (req, res, next) => {
+    try {
+        const { collections } = req.params;
+
+        const product = await productModel.find({collections});
+        res.status(200).json({
+            message:  `All ${collections}` ,
+            product
+        })
+    } catch (error) {
+        next({
+            message: error.message,
+            statusCode: 500
+        })
+    }
+};
