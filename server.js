@@ -9,6 +9,7 @@ const hireRouter = require('./routes/hiring');
 const messageRouter = require('./routes/message');
 const requestRouter = require('./routes/request');
 const commentRouter = require('./routes/comment');
+const cartRouter = require('./routes/cart');
 
 const app = express();
 app.use(express.json());
@@ -19,6 +20,7 @@ app.use('/api/v1/', artisanRouter);
 app.use('/api/v1/', hireRouter);
 app.use('/api/v1/', requestRouter);
 app.use('/api/v1/', commentRouter);
+app.use('/api/v1/', cartRouter);
 
 
 app.use((req, res, next) => {
